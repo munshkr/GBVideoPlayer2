@@ -18,7 +18,7 @@ docker run --rm -ti -v$(pwd):/videos -v$(pwd)/output:/app/output munshkr/gbvideo
 Then inside the container, run:
 
 ```sh
-make SOURCES=/videos/myvideofile.mp4
+make SOURCE=/videos/myvideofile.mp4
 ```
 
 It will create an `output/` there, where GBVideoPLayer will store temporary and the resulting .gbc roms for each video.
