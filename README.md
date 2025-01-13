@@ -1,4 +1,30 @@
 # GBVideoPlayer2
+
+## About this fork
+
+See the [original repository](https://github.com/LIJI32/GBVideoPlayer2) for more information.
+
+This fork has a couple of minor changes:
+* Adds Dockerfile to build with docker
+* Support for videos without audio
+* Bugfix when resizing/cropping
+
+To use with Docker, go to the directory where you have your videos and run:
+
+```sh
+docker run --rm -ti -v$(pwd):/videos -v$(pwd)/output:/app/output munshkr/gbvideoplayer2:latest
+```
+
+Then inside the container, run:
+
+```sh
+make SOURCES=/videos/myvideofile.mp4
+```
+
+It will create an `output/` there, where GBVideoPLayer will store temporary and the resulting .gbc roms for each video.
+
+---
+
 A new version of [GBVideoPlayer](https://github.com/LIJI32/GBVideoPlayer) with higher resolution, 3-bit stereo PCM audio and video compression.
 
 Version 2 increases the horizontal resolution by up to 4, replaces the chiptune music with ~9KHz, 3-bit PCM audio, introduces simple video compression with configurable quality settings, and uses a faster and easier to use encoding routines that can directly re-encode FFMPEG-compatible video to GBVP2 format.
