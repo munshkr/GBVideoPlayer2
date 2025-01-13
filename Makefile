@@ -40,8 +40,15 @@ output/encoder: encoder.c
 
 $(OUT)/audio.raw: $(SOURCE)
 	@echo $(TITLE)Converting audio...$(TITLE_END)
-	$(eval GAIN := 0$(shell ffmpeg -i $^ -filter:a volumedetect -f null /dev/null 2>&1 | sed -n "s/.*max_volume: -\(.*\) dB/\1/p"))
-	$(FFMPEG) -i $^ -f u8 -acodec pcm_u8 -ar 9198 -filter:a "volume=$(GAIN)dB" $@ 
+	$(eval AUDIO_STREAM_EXISTS := $(shell ffmpeg -i $^ 2>&1 | grep -c "Audio"))
+	@if [ $(AUDIO_STREAM_EXISTS) -eq 0 ]; then \
+		echo "No audio stream found, adding silent audio."; \
+		$(FFMPEG) -i $^ -f lavfi -t $(shell ffmpeg -i $^ 2>&1 | grep -oP 'Duration: \K[0-9]+:[0-9]+:[0-9]+\.[0-9]+') -i anullsrc -c:v copy -c:a aac -y $(OUT)/video_with_silent_audio.mp4; \
+		$(FFMPEG) -i $(OUT)/video_with_silent_audio.mp4 -f u8 -acodec pcm_u8 -ar 9198 -filter:a "volume=0dB" $@; \
+		rm $(OUT)/video_with_silent_audio.mp4; \
+	else \
+		$(FFMPEG) -i $^ -f u8 -acodec pcm_u8 -ar 9198 -filter:a "volume=0dB" $@; \
+	fi;
 
 $(OUT)/frames: $(OUT)/video.mp4
 	@echo $(TITLE)Extracting frames...$(TITLE_END)
